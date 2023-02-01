@@ -1,0 +1,34 @@
+{
+  "name": "shinyblocks",
+  "version": "0.0.1",
+  "description": "A Typescript Lib for Diamond Driven Development of Smart Contracts.",
+  "main": "shinyblocks.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DEITrust/shinyblocks.git"
+  },
+  "dependencies":{
+    "@nomiclabs/hardhat-ethers": "^2.2.0",    
+    "typescript": "^4.8.4",
+    "ethers": "^5.7.1"
+  },
+  "keywords": [
+    "ERC2535",
+    "EIP2535",
+    "Diamond",
+    "Diamonds",
+    "Solidity",
+    "EVM",
+    "Hardhat",
+    "ethers"
+  ],
+  "author": "Brandon Thorn (@proggR)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DEITrust/shinyblocks/issues"
+  },
+  "homepage": "https://github.com/DEITrust/shinyblocks#readme"
+}
