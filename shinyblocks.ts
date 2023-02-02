@@ -126,7 +126,7 @@ export const Diamond = async(hre, diamondName_:string, address_ = false, signer_
     return _diamond
 }
 
-export const Facets = async(hre, diamond_, facetNames_, signer_ = false, action_ = false, initContract_ = false, initFunction_ = false, args_:{} = {} ) => {
+export const Facets = async(hre, diamond_, facetNames_, action_ = false, signer_ = false, initContract_ = false, initFunction_ = false, args_:{} = {} ) => {
     if(typeof facetNames_ == typeof {} && facetNames_.coreFacets){
         console.log ("Cutting core facets from "+facetNames_.address+" to "+diamond_.address)
         return await _shareCoreFacets(hre, diamond_, facetNames_.coreFacets, signer_, action_, initContract_, initFunction_, args_)
@@ -277,8 +277,8 @@ const _deployDiamond = async (hre, diamondContract, signer_ = false, sharedCore_
     console.log('Deploying facets')
 
     const _functionCall = _initFacet.interface.encodeFunctionData('init')
-    const _coreFacets = await Facets(hre,_diamond,_facetNames, _owner, 
-                            CutAction.Add, _initFacet.address, _functionCall)
+    const _coreFacets = await Facets(hre,_diamond,_facetNames, 
+                            CutAction.Add, _owner, _initFacet.address, _functionCall)
     if (!_coreFacets) {
       throw Error(`Diamond upgrade failed: `)
     }
