@@ -1,3 +1,12 @@
+const ZERO = '0x0000000000000000000000000000000000000000'
+const _gasLimit = 10000000
+
+const CUT = 'DiamondCutFacet'
+const LOUPE = 'DiamondLoupeFacet'
+const OWNER = 'OwnershipFacet'
+const INIT = 'DiamondInit'
+export const CutAction = { Add: 0, Replace: 1, Remove: 2 }
+
 const signer = async(hre) => {
     const accounts = await hre.ethers.getSigners()
     return accounts[0]
@@ -17,10 +26,8 @@ const _getSelectors = (contract_) => {
 
 export const Signer = signer
 export const Selectors = _getSelectors
-export const CutAction = { Add: 0, Replace: 1, Remove: 2 }
 
-const ZERO = '0x0000000000000000000000000000000000000000'
-const _gasLimit = 10000000
+
 
 // example diamond object
 let _diamond = {
@@ -64,15 +71,13 @@ export const Facet = async(hre_:{ethers:{}}, diamond_:{address:string}, facetNam
         factory: Factory,
         signer: _signer,
         instance: _instance,
-        i: (()=>{
-            return this.instance
-        }),
+        i: _instance,
         Deploy: _deploy,
         Cut: _cut,
         Test: _test
     }
 
-    return _facet
+    return await(_facet)
 }
 
 const _deploy = async function(args_ = false){         
@@ -113,9 +118,9 @@ export const Diamond = async(hre, diamondName_:string, address_ = false, signer_
         coreFacets:{}
     }
 
-    const _cut = await Facet(hre, _diamond,'DiamondCutFacet', _signer), 
-    const _loupe = await Facet(hre, _diamond,'DiamondLoupeFacet', _signer),
-    const _ownership = await Facet(hre, _diamond,'OwnershipFacet', _signer)
+    const _cut = await Facet(hre, _diamond, CUT, _signer), 
+    const _loupe = await Facet(hre, _diamond, LOUPE, _signer),
+    const _ownership = await Facet(hre, _diamond, OWNER, _signer)
 
     _diamond.coreFacets = {
         cut: _cut, 
@@ -222,7 +227,7 @@ const _removeFacets = async (hre, diamondAddress_, facetNames_, initContract_ = 
   const _owner = await signer(hre)
   let _facets = []
   for (const facetName_ of facetNames_) {
-    const _facet = Facet(hre, {address:ZERO}, facetName_, _owner)
+    const _facet = await Facet(hre, {address:ZERO}, facetName_, _owner)
     _facets.push(_facet.instance);
   }
   return _cutFacets(hre, diamondAddress_,2,_facets, initContract_, initFunction_)
@@ -258,16 +263,16 @@ const _deployDiamond = async (hre, diamondContract, signer_ = false, sharedCore_
     //to be used to reuse already deployed contracts for diamond core contracts
 
     const _facetNames = [
-        'DiamondLoupeFacet',
-        'OwnershipFacet'
+        LOUPE,
+        OWNER
     ]
     const _owner = signer_ ? signer_ : await signer(hre)
     const DiamondContract = await Facet(hre, false, diamondContract, _owner)
-    const CutContract = await Facet(hre, false, 'DiamondCutFacet', _owner)    
+    const CutContract = await Facet(hre, false, CUT, _owner)    
     const _cutFacet = await CutContract.Deploy()    
     const _diamond = await DiamondContract.Deploy([_owner.address, _cutFacet.address])
 
-    const InitContract = await Facet(hre, false, 'DiamondInit', _owner)    
+    const InitContract = await Facet(hre, false, INIT, _owner)    
     const _initFacet = await InitContract.Deploy()    
     
   
